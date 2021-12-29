@@ -6,11 +6,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <title>Quarto</title>
-<?php 
- require_once "../lib/dbconnect.php";
- 
-  
-?>
+
     <!-- Bootstrap core CSS -->
     <link href="bootstrap/bootstrap.min.css" rel="stylesheet">
 	<link href="css/myquarto.css" rel="stylesheet">
@@ -20,9 +16,11 @@
   </head>
 <body>
 <h1>Quarto</h1>
-<?php echo "hello" ;
-?>
+
 <div id='Quarto_board'>
+</div>
+&nbsp; 
+<div id='Piece_board'>
 </div>
 <button id='quarto_reset' class='btn btn-primary'>ΕΝΑΡΞΗ</button><br>
 
