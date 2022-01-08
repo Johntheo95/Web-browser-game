@@ -34,16 +34,19 @@ function draw_empty_board() {
 }
 
 function fill_board() {
-	//$.ajax({url: "quarto.php/board/", method: 'get', success: fill_board_by_data });
+	console.log("I've been called1");
+	
+	$.ajax({url: "quarto.php/board/", method: 'get', success : fill_board_by_data });
 	
 }
 
 function fill_board_by_data(data,t1,t2) {
+	console.log("I've been called2");
 	for(var i=0;i<data.length;i++) {
 		var o = data[i];
 		var id = '#square_'+ o.x +'_' + o.y;
-		var c = (o.piece!=null)?o.piece_color + o.piece_height:'';
-		var im = (o.piece!=null)?'<img class="piece" src="images/'+c+'.png">':'';
+		var c = (o.piece_color!=null)?o.piece_color + o.piece_height + o.piece_center + o.piece_shape:'';
+		var im = (o.piece_color!=null)?'<img class="piece" src="images/'+c+'.jpg">':'';
 		$(id).addClass(o.b_color+'_square').html(im);
 		
 		

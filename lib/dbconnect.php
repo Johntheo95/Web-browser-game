@@ -11,7 +11,7 @@ if(gethostname()=='users.iee.ihu.gr') {
 	$mysqli = new mysqli($host, $user, $pass, $db,null,'/home/staff/asidirop/mysql/run/mysql.sock');
 } else {
         $mysqli = new mysqli('localhost',$user,null,$db);
-		echo "connected";
+		
 }
 
 if ($mysqli->connect_errno) {
