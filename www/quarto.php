@@ -32,7 +32,7 @@ switch ($r=array_shift($request)) {
                         exit;
 }
 
-
+//need one for pieceboard
 function handle_board($method) {
     if($method=='GET') {
             show_board();
