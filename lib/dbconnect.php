@@ -6,7 +6,7 @@ $pass='';
 
 
 
-
+//change this
 if(gethostname()=='users.iee.ihu.gr') {
 	$mysqli = new mysqli($host, $user, $pass, $db,null,'/home/staff/asidirop/mysql/run/mysql.sock');
 } else {
