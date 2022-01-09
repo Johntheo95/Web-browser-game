@@ -45,3 +45,95 @@ INSERT INTO `pieceboard` (`x`, `y`, `piece_color`, `piece_height`, `piece_center
 INSERT INTO `pieceboard` (`x`, `y`, `piece_color`, `piece_height`, `piece_center`, `piece_shape`) VALUES('4','2','B','S','F','SQ');
 INSERT INTO `pieceboard` (`x`, `y`, `piece_color`, `piece_height`, `piece_center`, `piece_shape`) VALUES('4','3','W','S','F','C');
 INSERT INTO `pieceboard` (`x`, `y`, `piece_color`, `piece_height`, `piece_center`, `piece_shape`) VALUES('4','4','B','S','F','C');
+
+
+
+
+
+
+DROP TABLE IF EXISTS `players`;
+/* piece_color changed to player_turn
+change the  order in frond of username the player_turn
+ */
+
+CREATE TABLE `players` (
+  `username` varchar(20) DEFAULT NULL,
+  `player_turn` enum('FIRST','SECOND') NOT NULL,
+  `token` varchar(100) DEFAULT NULL,
+  `last_action` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`player_turn`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+DROP TABLE IF EXISTS `game_status`;
+
+
+
+
+/*CHECK p_turn need to change, CHECK IF D WAS DRAW */
+CREATE TABLE `game_status` (
+  `status` enum('not active','initialized','started','ended','aborded') NOT NULL DEFAULT 'not active',
+  `p_turn` enum('FIRST','SECOND') DEFAULT NULL,
+  `result` enum('FIRST','SECOND','DRAW') DEFAULT NULL,
+  `last_change` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+INSERT INTO `game_status` VALUES ('not active',NULL,NULL,'2022-1-8 18:04:52');
+INSERT INTO `players` VALUES (NULL,'FIRST',NULL,NULL),(NULL,'SECOND',NULL,NULL);
+
+
+
+
+
+
+
+
+
+
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `clean_board`()
+BEGIN
+	replace into board select * from board_empty;
+	update `players` set username=null, token=null;
+    update `game_status` set `status`='not active', `p_turn`=null, `result`=null;
+    END ;;
+DELIMITER ;
+
+
+
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `move_piece`(x1 tinyint,y1 tinyint,x2 tinyint,y2 tinyint)
+BEGIN
+	declare  p, Whosturn char;
+	
+	select  piece, player_turn into p, Whosturn FROM `board` WHERE X=x1 AND Y=y1;
+	
+	update board
+	set piece=p, player_turn=Whosturn
+	where x=x2 and y=y2;
+	
+	UPDATE board
+	SET piece=null,player_turn=null
+	WHERE X=x1 AND Y=y1;
+	update game_status set p_turn=if(Whosturn='FIRST','SECOND','FIRST');
+	
+    END ;;
+DELIMITER ;
+
+
+
+
+
+
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `test_move`()
+BEGIN
+SELECT * FROM
+board B1 INNER JOIN board B2
+WHERE B1.x=2 AND B1.y=2
+AND (B2.`player_turn` IS NULL OR B2.`player_turn`<>B1.`player_turn`)
+AND B1.x=B2.x AND B1.y<B2.y AND (B2.y-B1.y)<=2 ;
+    END ;;
+DELIMITER ;

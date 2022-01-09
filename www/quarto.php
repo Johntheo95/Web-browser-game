@@ -1,6 +1,9 @@
 <?php
 require_once "../lib/dbconnect.php";
 require_once "../lib/board.php";
+require_once "../lib/game.php";
+require_once "../lib/users.php";
+
 
 $method = $_SERVER['REQUEST_METHOD'];
 $request = explode('/', trim($_SERVER['PATH_INFO'],'/'));
@@ -18,8 +21,10 @@ switch ($r=array_shift($request)) {
             case '':
             case null: handle_board($method);
                         break;
-            case 'piece': handle_piece($method, $request[0],$request[1],$input);
-                        break;
+           // case 'piece': handle_piece($method, $request[0],$request[1],$input);
+                      //  break;
+                        //ADDED DEFAULT
+                        default: header("HTTP/1.1 404 Not Found");
             }
             break;
     case 'status': 
@@ -32,7 +37,9 @@ switch ($r=array_shift($request)) {
                         exit;
 }
 
-//need one for pieceboard
+
+
+//need  another one for pieceboard
 function handle_board($method) {
     if($method=='GET') {
             show_board();
@@ -46,4 +53,39 @@ function handle_board($method) {
 
 
 
-?>
+//ADDED FROM HERE 
+
+if($input==null) {
+    $input=[];
+}
+if(isset($_SERVER['HTTP_X_TOKEN'])) {
+    $input['token']=$_SERVER['HTTP_X_TOKEN'];
+} else {
+    $input['token']='';
+}
+ 
+
+function handle_player($method, $p,$input) {
+    switch ($b=array_shift($p)) {
+	   case 'SECOND': 
+		case 'FIRST': handle_user($method, $b,$input);
+					break;
+		default: header("HTTP/1.1 404 Not Found");
+				 print json_encode(['errormesg'=>"Player $b not found."]);
+                 break;
+	}
+}
+  
+
+
+/* BREAKS THE IMAGES CHECK*/
+function handle_status($method) {
+    if($method=='GET') {
+        show_status();
+    } else {
+        header('HTTP/1.1 405 Method Not Allowed');
+    }
+
+}
+
+    ?>
