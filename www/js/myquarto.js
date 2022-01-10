@@ -2,6 +2,9 @@ $(function () {
 	
 	draw_empty_board();
 	fill_board();
+	fill_pieceboard();
+	$('#do_move').click( do_move);
+	$('#reset').click( reset_board);
 });
 
 
@@ -34,17 +37,22 @@ function draw_empty_board() {
 }
 
 function fill_board() {
-	console.log("I've been called1");
+	console.log("called fill_board");
 	
 	$.ajax({url: "quarto.php/board/", method: 'get', success : fill_board_by_data });
 	
 }
-
-function fill_board_by_data(data,t1,t2) {
+function fill_pieceboard() {
+	console.log("called fill_pieceboard");
 	
+	$.ajax({url: "quarto.php/board/pieceboard", method: 'get', success : fill_pieceboard_by_data });
+	
+}
+
+function fill_pieceboard_by_data(data,t1,t2) {
+	console.log("called fill_pieceboard_by_data");
 	for(var i=0;i<data.length;i++) {
 		var o = data[i];
-		console.log("I've been called2");
 		var id = '#squareb_'+ o.x +'_' + o.y;
 		var c = (o.piece_color!=null)?o.piece_color + o.piece_height + o.piece_center + o.piece_shape:'';
 		var im = (o.piece_color!=null)?'<img class="piece" src="images/'+c+'.jpg">':'';
@@ -52,4 +60,49 @@ function fill_board_by_data(data,t1,t2) {
 		
 		
 	}
+}
+
+function fill_board_by_data(data,t1,t2) {
+	
+	for(var i=0;i<data.length;i++) {
+		var o = data[i];
+		console.log("called fill_board_by_data");
+		var id = '#square_'+ o.x +'_' + o.y;
+		var c = (o.piece_color!='')?o.piece_color + o.piece_height + o.piece_center + o.piece_shape:'';
+		var im = (o.piece_color!='')?'<img class="piece" src="images/'+c+'.jpg">':'';
+		$(id).addClass(o.b_color+'_square').html(im);
+		
+		
+	}
+}
+
+
+function do_move() {
+	var s = $('#the_move').val();
+	
+	var a = s.trim().split(/[ ]+/);
+	if(a.length!=4) {
+		alert('Must give 4 numbers');
+		return;
+	}
+	console.log("called do_move");
+	$.ajax({url: "quarto.php/board/piece/"+a[0]+'/'+a[1], 
+			method: 'PUT',
+			dataType: "json",
+			contentType: 'application/json',
+			data: JSON.stringify( {x: a[2], y: a[3]}),
+			success: move_result,});
+	
+}
+//data maybe not needed
+function move_result(data){
+	fill_board();
+	fill_pieceboard();
+}
+
+function reset_board() {
+	//token removed must be added
+	$.ajax({url: "quarto.php/board/", method: 'POST',  success: fill_board_by_data });
+	$.ajax({url: "quarto.php/board/resetpieceboard", method: 'POST',  success: fill_pieceboard_by_data });
+	
 }
