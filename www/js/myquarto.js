@@ -91,7 +91,7 @@ function do_move() {
 			dataType: "json",
 			contentType: 'application/json',
 			data: JSON.stringify( {x: a[2], y: a[3]}),
-			success: move_result,});
+			success: move_result});
 	
 }
 //data maybe not needed

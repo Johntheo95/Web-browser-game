@@ -32,7 +32,7 @@ function move_piece($x,$y,$x2,$y2) {
 	$board=convert_board($orig_board);
 	//color was removed as a parameter must be added for player turn
 	//also must get pieceboard as a parameter to check also for null cell
-	$n = add_valid_moves_to_piece($board,$x,$y);
+	$n = add_valid_moves_to_piece($board,$x,$y,$x2,$y2);
 	
 	if($n==0) {
 		header("HTTP/1.1 400 Bad Request");
@@ -64,11 +64,11 @@ function do_move($x,$y,$x2,$y2) {
 
 // not used yet maybe ever
 function add_valid_moves_to_board(&$board,$b) {
-	$number_of_moves=0;
+	
 	
 	for($x=1;$x<5;$x++) {
 		for($y=1;$y<5;$y++) {
-			$number_of_moves+=add_valid_moves_to_piece($board,$b,$x,$y);
+			$number_of_moves+=add_valid_moves_to_piece($board,$b,$x,$y,$x2,$y2);
 		}
 	}
 	return($number_of_moves);
@@ -92,15 +92,25 @@ function read_board() {
 	$res = $st->get_result();
 	return($res->fetch_all(MYSQLI_ASSOC));
 }
-//must get pieceboard to check also for null cell
-function add_valid_moves_to_piece(&$board,$x,$y) {
+
+
+function add_valid_moves_to_piece(&$board,$x,$y,$x2,$y2) {
+	
+	
+	
+	
+	
+	
+	
 	//flag=false
 	$number_of_moves=0;
 	
-	if($board[$x][$y]['piece_color']==null) {
+	
+	if($board[$x2][$y2]['piece_color']==null) {
 		//flag=true
 		$number_of_moves=1;
 	} 
+	
 	return($number_of_moves);
 }
 //not used
@@ -160,5 +170,6 @@ function reset_pieceboard() {
 	$mysqli->query($sql);
 	show_pieceboard();
 }
+	
 
 ?>
