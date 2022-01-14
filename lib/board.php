@@ -98,7 +98,7 @@ function add_valid_moves_to_piece(&$board,$x,$y,$x2,$y2) {
 	
 	
 	
-	
+	$v=check_victory($board);
 	
 	
 	
@@ -110,7 +110,9 @@ function add_valid_moves_to_piece(&$board,$x,$y,$x2,$y2) {
 		//flag=true
 		$number_of_moves=1;
 	} 
-	
+	if($v==1){
+		$number_of_moves=0;
+	}
 	return($number_of_moves);
 }
 //not used
@@ -169,6 +171,96 @@ function reset_pieceboard() {
 	$sql = 'call clean_pieceboard()';
 	$mysqli->query($sql);
 	show_pieceboard();
+}
+function check_victory(&$board){
+$counterd=0;
+$counterdi=0;
+$v=0;
+$data_table=['piece_color','piece_height','piece_center','piece_shape'];
+$cols=[0,0,0,0];
+
+for($z=0;$z<3;$z++){
+	$counterh=0;
+	$counterdi=0;
+	$cols=[0,0,0,0];
+	$counterd=0;
+	for($j=1;$j<5;$j++){
+			
+			$counterh=0;
+		for($i=1;$i<5;$i++){
+			
+	if($j!=1){
+		if($board[$i][$j-1][$data_table[$z]]!=null){
+		if ($board[$i][$j][$data_table[$z]]==$board[$i][$j-1][$data_table[$z]]){
+          $cols[$i-1]++;
+		 
+	foreach ($cols as &$value){
+		if($value==3){
+		$v=1;
+		return($v);}
+	}
+                   	
+		}
+		}
+		
+
+		
+	}
+									   						
+		if($i!=1){
+			
+	if(($i+$j)==5){
+
+if($board[$i-1][$j+1][$data_table[$z]]!=null){
+if ($board[$i][$j][$data_table[$z]]==$board[$i-1][$j+1][$data_table[$z]]){
+     $counterdi++;
+		if($counterdi==3){
+			$v=1;
+			return($v);}
+}
+	}
+		}
+			
+			if($board[$i-1][$j][$data_table[$z]]!=null){
+				if ($board[$i][$j][$data_table[$z]]==$board[$i-1][$j][$data_table[$z]]){
+				$counterh++;
+				if($counterh==3){
+					$v=1;
+					return($v);
+				}
+			      
+			}
+			
+			}
+		
+		if($i==$j){
+			if($board[$i-1][$j-1][$data_table[$z]]!=null){
+			if ($board[$i][$j][$data_table[$z]]==$board[$i-1][$j-1][$data_table[$z]]){
+				$counterd++;
+			 if($counterd==3){
+					$v=1;
+					return($v);
+				}
+   	}
+			}	
+		}
+						
+				}
+	
+	         
+			 
+			 
+			 }
+}
+     
+       
+
+		
+}
+			
+
+return($v);
+ 
 }
 	
 
