@@ -28,11 +28,14 @@ function move_piece($x,$y,$x2,$y2) {
 	//exit;
 
 	//}
+	
 	$orig_board=read_board();
 	$board=convert_board($orig_board);
+	$orig_pieceboard=read_pieceboard();
+	$pieceboard=convert_pieceboard($orig_pieceboard);
 	//color was removed as a parameter must be added for player turn
 	//also must get pieceboard as a parameter to check also for null cell
-	$n = add_valid_moves_to_piece($board,$x,$y,$x2,$y2);
+	$n = add_valid_moves_to_piece($board,$pieceboard,$x,$y,$x2,$y2);
 	
 	if($n==0) {
 		header("HTTP/1.1 400 Bad Request");
@@ -62,18 +65,6 @@ function do_move($x,$y,$x2,$y2) {
 	print json_encode(read_board(), JSON_PRETTY_PRINT);
 }
 
-// not used yet maybe ever
-function add_valid_moves_to_board(&$board,$b) {
-	
-	
-	for($x=1;$x<5;$x++) {
-		for($y=1;$y<5;$y++) {
-			$number_of_moves+=add_valid_moves_to_piece($board,$b,$x,$y,$x2,$y2);
-		}
-	}
-	return($number_of_moves);
-}
-
 
 function convert_board(&$orig_board) {
 	$board=[];
@@ -81,6 +72,14 @@ function convert_board(&$orig_board) {
 		$board[$row['x']][$row['y']] = &$row;
 	} 
 	return($board);
+}
+
+function convert_pieceboard(&$orig_pieceboard) {
+	$pieceboard=[];
+	foreach($orig_pieceboard as $i=>&$row) {
+		$pieceboard[$row['x']][$row['y']] = &$row;
+	} 
+	return($pieceboard);
 }
 
 
@@ -93,8 +92,16 @@ function read_board() {
 	return($res->fetch_all(MYSQLI_ASSOC));
 }
 
+function read_pieceboard() {
+	global $mysqli;
+	$sql = 'select * from pieceboard';
+	$st = $mysqli->prepare($sql);
+	$st->execute();
+	$res = $st->get_result();
+	return($res->fetch_all(MYSQLI_ASSOC));
+}
 
-function add_valid_moves_to_piece(&$board,$x,$y,$x2,$y2) {
+function add_valid_moves_to_piece(&$board,&$pieceboard,$x,$y,$x2,$y2) {
 	
 	
 	
@@ -107,9 +114,16 @@ function add_valid_moves_to_piece(&$board,$x,$y,$x2,$y2) {
 	
 	
 	if($board[$x2][$y2]['piece_color']==null) {
-		//flag=true
+		
+			//flag=true
 		$number_of_moves=1;
-	} 
+		}
+		
+	if($pieceboard[$x][$y]['piece_color']==null){
+			//flag=false
+		$number_of_moves=0;
+		}
+	 
 	if($v==1){
 		$number_of_moves=0;
 	}
@@ -171,7 +185,11 @@ function reset_pieceboard() {
 	$sql = 'call clean_pieceboard()';
 	$mysqli->query($sql);
 	show_pieceboard();
+
 }
+
+
+
 function check_victory(&$board){
 $counterd=0;
 $counterdi=0;
