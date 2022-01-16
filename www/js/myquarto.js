@@ -164,11 +164,11 @@ function update_status(data) {
 			fill_board();
 		}
 		$('#move_div').show(1000);
-		timer=setTimeout(function() { game_status_update();}, 15000);
+		timer=setTimeout(function() { game_status_update();}, 2000);
 	} else {
 		// must wait for something
 		$('#move_div').hide(1000);
-		timer=setTimeout(function() { game_status_update();}, 4000);
+		timer=setTimeout(function() { game_status_update();}, 1000);
 	}
  	
 }
