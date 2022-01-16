@@ -97,11 +97,11 @@ function fill_pieceboard_by_data(data,t1,t2) {
 		$(id).html(im);//remove addClass or change for background icon
 		
 		//CHECK THIS ONE 
-        if(me.player_turn!=null && game_status.p_turn==me.player_turn) {
+        /*if(me.player_turn!=null && game_status.p_turn==me.player_turn) {
 			$('#move_div').show(1000);
 		} else {
 			$('#move_div').hide(1000);
-		}
+		}*/
 		
 	}
 }
@@ -163,12 +163,16 @@ function update_status(data) {
 		if(game_stat_old.p_turn!=game_status.p_turn) {
 			fill_board();
 		}
+
 		$('#move_div').show(1000);
-		timer=setTimeout(function() { game_status_update();}, 2000);
-	} else {
+		timer=setTimeout(function() { game_status_update();}, 1000);
+	} 
+	
+	
+	else {
 		// must wait for something
 		$('#move_div').hide(1000);
-		timer=setTimeout(function() { game_status_update();}, 1000);
+		timer=setTimeout(function() { game_status_update();}, 2000);
 	}
  	
 }
@@ -231,5 +235,6 @@ function reset_board() {
 	//token removed must be added  X-Token added should work
 	$.ajax({url: "quarto.php/board/",headers: {"X-Token": me.token}, method: 'POST',  success: fill_board_by_data });
 	$.ajax({url: "quarto.php/board/resetpieceboard", headers: {"X-Token": me.token},method: 'POST',  success: fill_pieceboard_by_data });
+	$('#game_initializer').show();
 	
 }
