@@ -11,11 +11,14 @@ $(function () {
 	
 	draw_empty_board();
 	fill_board();
-
+    fill_pieceboard();
 
 	$('#Quarto_login').click( login_to_game);
-	$('#quarto_reset').click( reset_board);
+	$('#do_move').click( do_move);
 	
+	
+	$('#reset').click( reset_board);
+	// with old button $('#quarto_reset').click( reset_board); 
 	$('#move_div').hide();
 	game_status_update();
 	
@@ -36,7 +39,6 @@ function draw_empty_board() {
 	
 	$('#Quarto_board').html(t);
 	
-	
 	var tb='<table id="quarto_table">';
 	for(var i=4;i>0;i--) {
 		tb += '<tr>';
@@ -51,59 +53,73 @@ function draw_empty_board() {
 	
 }
 
+
+
+
+
 function fill_board() {
-	console.log("I've been called1");
-	
-	$.ajax({url: "quarto.php/board/", method: 'get', success : fill_board_by_data });
+	console.log("called fill_board");
+	$.ajax({url: "quarto.php/board/", headers: {"X-Token": me.token}, method: 'get', success : fill_board_by_data });
 	
 }
 
-function fill_board_by_data(data,t1,t2) {
+function fill_pieceboard() {
+	console.log("called fill_pieceboard");
 	
+	$.ajax({url: "quarto.php/board/pieceboard",headers: {"X-Token": me.token}, method: 'get', success : fill_pieceboard_by_data });
+	
+}
+
+
+function fill_board_by_data(data,t1,t2) {
+
 	for(var i=0;i<data.length;i++) {
 		var o = data[i];
-		console.log("I've been called2");
+		console.log("called fill_board_by_data");
+		var id = '#square_'+ o.x +'_' + o.y;
+		var c = (o.piece_color!='')?o.piece_color + o.piece_height + o.piece_center + o.piece_shape:'';
+		var im = (o.piece_color!='')?'<img class="piece" src="images/'+c+'.jpg">':'';
+		$(id).html(im);
+		
+	}
+
+		
+}
+
+
+function fill_pieceboard_by_data(data,t1,t2) {
+	console.log("called fill_pieceboard_by_data");
+	for(var i=0;i<data.length;i++) {
+		var o = data[i];
 		var id = '#squareb_'+ o.x +'_' + o.y;
 		var c = (o.piece_color!=null)?o.piece_color + o.piece_height + o.piece_center + o.piece_shape:'';
 		var im = (o.piece_color!=null)?'<img class="piece" src="images/'+c+'.jpg">':'';
-	    $(id).html(im);
-		}
-        
+		$(id).html(im);//remove addClass or change for background icon
 		
-		/*CHECK THIS ONE 
-        if(me.piece_color!=null && game_status.p_turn==me.piece_color) {
+		//CHECK THIS ONE 
+        if(me.player_turn!=null && game_status.p_turn==me.player_turn) {
 			$('#move_div').show(1000);
 		} else {
 			$('#move_div').hide(1000);
 		}
-		*/
-
+		
+	}
 }
 
-
-
-
 //ADDED FROM HERE
-
-/* */
-function reset_board() {
-	$.ajax({url: "quarto.php/board/", headers: {"X-Token": me.token}, method: 'POST',  success: fill_board_by_data });
-	$('#move_div').hide();
-	$('#game_initializer').show(2000);
-    }
-
-
-
 function login_to_game() {
 	if($('#username').val()=='') {
 		alert('You have to set a username');
 		return;
 	}
 	var Whosturn = $('#pturn').val();
-	draw_empty_board(Whosturn);
-	fill_board();
-	
-	$.ajax({url: "quarto.php/players/"+ Whosturn, 
+	//dont need because was used for black chess player
+	//draw_empty_board();
+	//console.log("draw_empty_board ok");
+	//fill_board(); //need to ender Whosturn?
+	//console.log("fill_board ok");
+
+	$.ajax({url: "quarto.php/players/"+ Whosturn,
 			method: 'PUT',
 			dataType: "json",
 			headers: {"X-Token": me.token},
@@ -126,16 +142,20 @@ function login_error(data,y,z,c) {
 }
 
 function game_status_update() {
-	
 	clearTimeout(timer);
-	$.ajax({url: "quarto.php/status/", success: update_status,headers: {"X-Token": me.token} });
+	$.ajax({url: "quarto.php/status/", success: update_status, headers: {"X-Token": me.token} });
+	console.log("game_status_update");
 }
 
+
+
+//check this with the do_move fucntion to chage the player turn and div hide and show
 function update_status(data) {
 	last_update=new Date().getTime();
 	var game_stat_old = game_status;
 	game_status=data[0];
 	update_info();
+	console.log("update_info from updatestatus");
 	clearTimeout(timer);
 	if(game_status.p_turn==me.player_turn &&  me.player_turn!=null) {
 		x=0;
@@ -155,7 +175,61 @@ function update_status(data) {
 
 function update_info(){
 	$('#game_info').html("I am Player: "+me.player_turn+", my name is "+me.username +'<br>Token='+me.token+'<br>Game state: '+game_status.status+', '+ game_status.p_turn+' must play now.');
-	
-	}
+	console.log("update_info from update_info");
+}
 
+
+
+
+
+
+
+
+
+
+	function do_move() {
+	var s = $('#the_move').val();
 	
+	var a = s.trim().split(/[ ]+/);
+	if(a.length!=4) {
+		alert('Must give 4 numbers');
+		return;
+	}
+	console.log("called do_move");
+	$.ajax({url: "quarto.php/board/piece/"+a[0]+'/'+a[1], 
+			method: 'PUT',
+			dataType: "json",
+			contentType: 'application/json',
+			data: JSON.stringify( {x: a[2], y: a[3]}),
+			headers: {"X-Token": me.token},
+			success: move_result,});
+}
+
+
+//data maybe not needed
+
+//added data in functions
+function move_result(data){
+	console.log("now in the move_result")
+	//this needs data?
+	game_status_update();
+	fill_board(data);
+	fill_pieceboard(data);
+	
+
+}
+
+
+/*  OLD ONE CHANGE IT
+function reset_board() {
+	$.ajax({url: "quarto.php/board/", headers: {"X-Token": me.token}, method: 'POST',  success: fill_board_by_data });
+	$('#move_div').hide();
+	$('#game_initializer').show(2000);  <---- MAYBE THIS IS NEED
+    }
+*/
+function reset_board() {
+	//token removed must be added  X-Token added should work
+	$.ajax({url: "quarto.php/board/",headers: {"X-Token": me.token}, method: 'POST',  success: fill_board_by_data });
+	$.ajax({url: "quarto.php/board/resetpieceboard", headers: {"X-Token": me.token},method: 'POST',  success: fill_pieceboard_by_data });
+	
+}

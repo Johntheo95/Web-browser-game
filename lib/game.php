@@ -61,6 +61,7 @@ function update_game_status() {
 		case 1: $new_status='initialized'; break;
 		case 2: $new_status='started'; 
 				if($status['p_turn']==null) {
+					//need to change to second
 					$new_turn='FIRST'; // It was not started before...
 				}
 				break;
@@ -85,8 +86,5 @@ function read_status() {
 	$res = $st->get_result();
 	$status = $res->fetch_assoc();
 	return($status);
-
-
 }
-
 ?>
