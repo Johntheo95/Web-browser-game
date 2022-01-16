@@ -17,6 +17,11 @@ function show_status() {
 
 }
 
+
+
+
+
+
 function check_abort() {
 	global $mysqli;
 	

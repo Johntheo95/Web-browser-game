@@ -5,6 +5,9 @@ require_once "../lib/users.php";
 //maybe need $input
 
 //check this should probaly incude the token when showing
+
+
+
 function show_board($input) {
 	global $mysqli;
 	
@@ -12,8 +15,6 @@ function show_board($input) {
     $st = $mysqli->prepare($sql);
     $st->execute();
     $res = $st->get_result();
-	
-	
 	
 	
 	header('Content-type: application/json');
