@@ -151,6 +151,8 @@ function game_status_update() {
 
 //check this with the do_move fucntion to chage the player turn and div hide and show
 function update_status(data) {
+	fill_board();
+	fill_pieceboard();
 	last_update=new Date().getTime();
 	var game_stat_old = game_status;
 	game_status=data[0];
