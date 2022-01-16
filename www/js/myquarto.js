@@ -80,8 +80,6 @@ function fill_board_by_data(data,t1,t2) {
 		var c = (o.piece_color!='')?o.piece_color + o.piece_height + o.piece_center + o.piece_shape:'';
 		var im = (o.piece_color!='')?'<img class="piece" src="images/'+c+'.jpg">':'';
 		$(id).html(im);
-
-
 		
 	}
 
@@ -99,11 +97,11 @@ function fill_pieceboard_by_data(data,t1,t2) {
 		$(id).html(im);//remove addClass or change for background icon
 		
 		//CHECK THIS ONE 
-        if(me.player_turn!=null && game_status.p_turn==me.player_turn) {
+        /*if(me.player_turn!=null && game_status.p_turn==me.player_turn) {
 			$('#move_div').show(1000);
 		} else {
 			$('#move_div').hide(1000);
-		}
+		}*/
 		
 	}
 }
@@ -147,18 +145,17 @@ function game_status_update() {
 	clearTimeout(timer);
 	$.ajax({url: "quarto.php/status/", success: update_status, headers: {"X-Token": me.token} });
 	console.log("game_status_update");
-	
-		
 }
 
 
 
 //check this with the do_move fucntion to chage the player turn and div hide and show
 function update_status(data) {
+	fill_board();
+	fill_pieceboard();
 	last_update=new Date().getTime();
 	var game_stat_old = game_status;
 	game_status=data[0];
-	//if(game_status.staus= "")
 	update_info();
 	console.log("update_info from updatestatus");
 	clearTimeout(timer);
@@ -167,14 +164,17 @@ function update_status(data) {
 		// do play
 		if(game_stat_old.p_turn!=game_status.p_turn) {
 			fill_board();
-			fill_pieceboard();
 		}
+
 		$('#move_div').show(1000);
-		timer=setTimeout(function() { game_status_update();}, 12000);
-	} else {
+		timer=setTimeout(function() { game_status_update();}, 1000);
+	} 
+	
+	
+	else {
 		// must wait for something
 		$('#move_div').hide(1000);
-		timer=setTimeout(function() { game_status_update();}, 4000);
+		timer=setTimeout(function() { game_status_update();}, 2000);
 	}
  	
 }
@@ -185,8 +185,6 @@ function update_info(){
 }
 
 
-
-	
 
 
 
@@ -220,10 +218,9 @@ function update_info(){
 function move_result(data){
 	console.log("now in the move_result")
 	//this needs data?
-	fill_board();
-	fill_pieceboard();
 	game_status_update();
-
+	fill_board(data);
+	fill_pieceboard(data);
 	
 
 }
@@ -242,6 +239,4 @@ function reset_board() {
 	$.ajax({url: "quarto.php/board/resetpieceboard", headers: {"X-Token": me.token},method: 'POST',  success: fill_pieceboard_by_data });
 	$('#game_initializer').show();
 	
-		
-		
 }

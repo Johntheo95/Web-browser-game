@@ -42,8 +42,7 @@ switch ($r=array_shift($request)) {
 			break;
 	case 'players': handle_player($method, $request,$input);
 			    break;
-
-    default:  header("HTTP/1.1 404 Not Found");
+	default:  header("HTTP/1.1 404 Not Found");
                         exit;
 }
 
@@ -90,11 +89,8 @@ function handle_pieceboard() {
 
 //check this against 
 function handle_resetpieceboard(){
-    global $mysqli;
-    $sql = 'UPDATE players SET username=NULL, token=NULL,player_turn=NULL';
-	$st = $mysqli->prepare($sql);
-	$st->execute();
-
+	
+	reset_pieceboard();
    
 }
 
@@ -132,7 +128,9 @@ function handle_status($method) {
 }
 
    
+   
+   
 
-
+   
    
    ?>
